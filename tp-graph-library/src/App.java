@@ -1,46 +1,65 @@
 import java.util.LinkedList;
 import java.util.Random;
 
-import Exception.VerticeJaAdicionadoComoAdjacente;
-import Exception.VerticeJaExisteException;
-import ListaAdjacencia.Grafo;
-import utils.Vertice;
+import Exception.NodeAlreadyAddedAsAdjacentException;
+import Exception.NodeAlreadyExistsException;
+import AdjacencyList.Graph;
+import utilsFolder.Node;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        executaIlustracao(100);
+
+        executeRepresentation(100);
         System.out.println();
     }
 
-    public static void executaIlustracao(int quantidadeVertices) throws Exception {
-        System.out.println("Executando exemplo para " + quantidadeVertices + " vertices...");
+    public static void executeRepresentation(int nodeQuantity) throws Exception {
+
+        System.out.println("Executando exemplo para " + nodeQuantity + " vertices...");
         System.out.println("Criando grafo...");
-        Grafo g = criaGrafoAletorio(quantidadeVertices);
+        Graph g = generateRandomGraph(nodeQuantity);
         System.out.println("Gerando arestas aleatorias...");
-        criaArestasAleatorias(g);
+        generateRandomEdges(g);
+
+
+        System.out.print("\nTipo do Grafo G: " + g.getClass() + "\n");
+
+        /* for (int i = 0; i < g.nodeQuantity(); i++) {
+            System.out.println(i +" = "+ g.getVertices());
+        } */
+
+        boolean isComplete = g.isComplete();
+        System.out.print("\nGrafo é completo? ");
+        System.out.print(isComplete);
+        int nAmount = g.nodeAmount();
+        System.out.print("\nQuantidade de vértices: ");
+        System.out.print(nAmount);
+        int eAmount = g.nodeAmount();
+        System.out.print("\nQuantidade de arestas: ");
+        System.out.print(eAmount);
 
         long mstime = System.currentTimeMillis();
         System.out.printf("\nTEMPO em milisegundos: ", mstime);
         System.out.println("Work in progress...");
     }
 
-    public static Grafo criaGrafoAletorio(int quantidadeVertices) throws VerticeJaExisteException {
-        Vertice[] vertices = new Vertice[quantidadeVertices];
-        for (int i = 0; i < quantidadeVertices; i++) {
-            vertices[i] = new Vertice(String.valueOf(i));
+    public static Graph generateRandomGraph(int nodeQuantity) throws NodeAlreadyExistsException {
+        Node[] vertices = new Node[nodeQuantity];
+        for (int i = 0; i < nodeQuantity; i++) {
+            vertices[i] = new Node(String.valueOf(i));
         }
-        Grafo g = new Grafo(vertices);
+        Graph g = new Graph(vertices);
         return g;
     }
 
-    public static void criaArestasAleatorias(Grafo g) throws Exception {
+    public static void generateRandomEdges(Graph g) throws Exception {
         Random r = new Random();
-        int quantidadeVertices = g.quantidadeVertices();
-        int quantidadeArestasACriar = Math.min(quantidadeVertices, 100); // Limitando a 100 arestas para poupar recursos
-        LinkedList<Vertice> vertices = g.getVertices();
-        for (int i = 0; i < quantidadeArestasACriar; i++) {
-            Vertice v1 = vertices.get(r.nextInt(quantidadeVertices - 1));
-            Vertice v2 = vertices.get(r.nextInt(quantidadeVertices - 1));
+        int nodeQuantity = g.nodeAmount();
+        int edgeAmountToBeGenerated = Math.min(nodeQuantity, 100); // Limitando a 100 arestas para poupar recursos
+        LinkedList<Node> vertices = g.getNodes();
+        for (int i = 0; i < edgeAmountToBeGenerated; i++) {
+            Node v1 = vertices.get(r.nextInt(nodeQuantity - 1));
+            Node v2 = vertices.get(r.nextInt(nodeQuantity - 1));
 
             if (v1.equals(v2)) {
                 i--;
@@ -48,8 +67,8 @@ public class App {
             }
 
             try {
-                g.adicionarAresta(v1, v2);
-            } catch (VerticeJaAdicionadoComoAdjacente e) {
+                g.addEdge(v1, v2);
+            } catch (NodeAlreadyAddedAsAdjacentException e) {
                 i--;
             } catch (Exception e) {
                 throw e;

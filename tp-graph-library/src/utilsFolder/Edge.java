@@ -1,25 +1,25 @@
-package utils;
+package utilsFolder;
 
 /**
  * Representacao de uma aresta de um determinado grafo
  */
 
-public class Aresta extends ItemGrafo {
-    private Vertice v1;
-    private Vertice v2;
+public class Edge extends GraphItem {
+    private Node v1;
+    private Node v2;
 
-    public Aresta(Vertice v1, Vertice v2) {
+    public Edge(Node v1, Node v2) {
         this.v1 = v1;
         this.v2 = v2;
     }
 
-    public Aresta(Vertice v1, Vertice v2, String rotulo) {
+    public Edge(Node v1, Node v2, String rotulo) {
         super(rotulo);
         this.v1 = v1;
         this.v2 = v2;
     }
 
-    public Aresta(Vertice v1, Vertice v2, String rotulo, int peso) {
+    public Edge(Node v1, Node v2, String rotulo, int peso) {
         super(rotulo, peso);
         this.v1 = v1;
         this.v2 = v2;
@@ -28,18 +28,18 @@ public class Aresta extends ItemGrafo {
     /**
      * Obtem o primeiro vertice da aresta
      * 
-     * @return Vertice
+     * @return Node
      */
-    public Vertice getVertice1() {
+    public Node getVertice1() {
         return this.v1;
     }
 
     /**
      * Obtem o segundo vertice da aresta
      * 
-     * @return Vertice
+     * @return Node
      */
-    public Vertice getVertice2() {
+    public Node getVertice2() {
         return this.v2;
     }
 
@@ -50,7 +50,7 @@ public class Aresta extends ItemGrafo {
      */
     @Override
     public boolean equals(Object o) {
-        Aresta a = (Aresta) o;
+        Edge a = (Edge) o;
         if (a == null) {
             return false;
         }
