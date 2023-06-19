@@ -1,49 +1,59 @@
 import java.util.Arrays;
+import java.util.Scanner;
+import java.io.*;  
 
 public class LabelPropagation {
 
+    // Mude para o caminho do seu computador
+    static String PathToCSVFile = "/home/gustavo/\u00C1rea de Trabalho/GRAFOS/TrabalhoPratico/tp-algoritmos-em-grafos/tp-graph-library/database/two_moons.csv";
     public static void main(String[] args) {
-            // Dados de exemplo
-            double[][] data = {
-                {1.0, 0},
-                {2.0, 0},
-                {3.0, 1},
-                {4.0, 1},
-                {5.0, 0},
-                {6.0, 1}
-            };
 
-            // Calcular matriz de afinidade
-            double[][] affinityMatrix = computeAffinityMatrix(data);
+        // Dados de exemplo
+        /* double[][] data = {
+            {1.0, 2.0, 0},
+            {2.0, 3.0, 0},
+            {3.0, 4.0, 1},
+            {4.0, 5.0, 1},
+            {5.0, 6.0, 0},
+            {6.0, 7.0, 1}
+        }; */
 
-            // Executar propagação de rótulos
-            double[][] propagatedLabels = labelPropagation(data, affinityMatrix, 0.5, 10);
+        double[][] data = new double[0][0];
 
-            // Imprimir matriz de rótulos propagados
-            System.out.println("Matriz de Rótulos Propagados:");
-            printMatrix(propagatedLabels);
-
-            // Prever rótulos
-            int[] predictedLabels = predictLabels(propagatedLabels);
-
-            // Imprimir rótulos previstos
-            System.out.println("Rótulos Previstos:");
-            System.out.println(Arrays.toString(predictedLabels));
+        try {
+            Exemplo2();
+            data = convertDataFromCSVtoMatrix();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        // Métodos computeAffinityMatrix, labelPropagation, printMatrix, computeDistance, predictLabels
-        // permanecem os mesmos do código fornecido na pergunta
+        // Calcular matriz de afinidade
+        double[][] affinityMatrix = computeAffinityMatrix(data);
 
+        // Executar propagação de rótulos
+        double[][] propagatedLabels = labelPropagation(data, affinityMatrix, 0.5, 10);
+
+        // Imprimir matriz de rótulos propagados
+        System.out.println("Matriz de Rótulos Propagados:");
+        printMatrix(propagatedLabels);
+
+        // Prever rótulos
+        int[] predictedLabels = predictLabels(propagatedLabels);
+
+        // Imprimir rótulos previstos
+        System.out.println("Rótulos Previstos:");
+        System.out.println(Arrays.toString(predictedLabels));
+    }
 
     public static double[][] labelPropagation(double[][] X, double[][] W, double alpha, int numIterations) {
         int numPoints = X.length;
-        int numClasses = Arrays.stream(X).mapToInt(x -> (int) x[1]).max().orElse(0) + 1;
+        int numClasses = Arrays.stream(X).mapToInt(x -> (int) x[2]).max().orElse(0) + 1;
 
         double[][] F = new double[numPoints][numClasses];
 
-        // Inicializa F com as classes iniciais conhecidas
+        // Inicializar F com as classes iniciais conhecidas
         for (int i = 0; i < numPoints; i++) {
-            int label = (int) X[i][1];
+            int label = (int) X[i][2];
             F[i][label] = 1.0;
         }
 
@@ -78,8 +88,8 @@ public class LabelPropagation {
 
         for (int i = 0; i < numPoints; i++) {
             for (int j = 0; j < numPoints; j++) {
-                double[] xi = X[i];
-                double[] xj = X[j];
+                double[] xi = {X[i][0], X[i][1]};
+                double[] xj = {X[j][0], X[j][1]};
                 double distance = computeDistance(xi, xj);
                 W[i][j] = Math.exp(-distance / (2 * sigma * sigma));
             }
@@ -135,4 +145,41 @@ public class LabelPropagation {
 
         return predictedLabels;
     }
+
+    public static double[][] convertDataFromCSVtoMatrix() throws Exception {
+
+        // parsing a CSV file into Scanner class constructor
+
+        Scanner sc = new Scanner(new File(PathToCSVFile));
+        sc.useDelimiter(","); // sets the delimiter pattern
+        while (sc.hasNext()) {
+            System.out.print(sc.next()); // find and returns the next complete token from this Scanner
+        }
+        sc.close(); // closes the scanner
+
+        double[][] dataMatrix = new double[0][0];
+
+        return dataMatrix;
+    }
+
+    public static void Exemplo2() {
+
+        // Função pra transformar CSV em forma de Matriz
+        // A ser implementada
+        // Erro out of bounds for lenght 0
+        String line = "";  
+        String splitBy = ",";  
+        try {
+            // parsing a CSV file into BufferedReader class constructor
+            BufferedReader br = new BufferedReader(new FileReader(PathToCSVFile));
+            while ((line = br.readLine()) != null) { // returns a Boolean value
+                String[] data_properties = line.split(splitBy); // use comma as separator
+                System.out.println("X1=" + data_properties[0] + ", X2=" + data_properties[1] + ", Y=" + data_properties[2]);  
+            }
+            br.close();
+        }   
+        catch (IOException e) {  
+            e.printStackTrace();  
+        }  
+    }  
 }
