@@ -1,6 +1,7 @@
 import java.util.Arrays;
 import java.util.Scanner;
-import java.io.*;  
+import java.util.stream.*;
+import java.io.*;
 
 public class LabelPropagation {
 
@@ -9,32 +10,39 @@ public class LabelPropagation {
     public static void main(String[] args) {
 
         // Dados de exemplo
-        /* double[][] data = {
+        double[][] data = {
             {1.0, 2.0, 0},
             {2.0, 3.0, 0},
             {3.0, 4.0, 1},
             {4.0, 5.0, 1},
             {5.0, 6.0, 0},
             {6.0, 7.0, 1}
-        }; */
-
-        double[][] data = new double[0][0];
+        };
+        
+        // Desconsiderar próxima linha, é apenas um teste
+        // double[][] data = new double[0][0];
 
         try {
-            Exemplo2();
             data = convertDataFromCSVtoMatrix();
+
+            printMatrix(data);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         // Calcular matriz de afinidade
         double[][] affinityMatrix = computeAffinityMatrix(data);
+        System.out.println("Matriz de Afinidade: ");
+        System.out.println();
+        printMatrix(affinityMatrix);
 
         // Executar propagação de rótulos
-        double[][] propagatedLabels = labelPropagation(data, affinityMatrix, 0.5, 10);
+        double[][] propagatedLabels = labelPropagation(data, affinityMatrix, 0.5, 100);
+
 
         // Imprimir matriz de rótulos propagados
         System.out.println("Matriz de Rótulos Propagados:");
+        System.out.println();
         printMatrix(propagatedLabels);
 
         // Prever rótulos
@@ -46,6 +54,7 @@ public class LabelPropagation {
     }
 
     public static double[][] labelPropagation(double[][] X, double[][] W, double alpha, int numIterations) {
+        
         int numPoints = X.length;
         int numClasses = Arrays.stream(X).mapToInt(x -> (int) x[2]).max().orElse(0) + 1;
 
@@ -81,6 +90,7 @@ public class LabelPropagation {
     }
 
     public static double[][] computeAffinityMatrix(double[][] X) {
+        
         int numPoints = X.length;
         double sigma = 1.0; // Valor de sigma a ser ajustado
 
@@ -99,6 +109,8 @@ public class LabelPropagation {
     }
 
     public static void printMatrix(double[][] matrix) {
+
+        System.out.println("matrix lenght()" + matrix.length);
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 System.out.print(matrix[i][j] + " ");
@@ -147,8 +159,16 @@ public class LabelPropagation {
     }
 
     public static double[][] convertDataFromCSVtoMatrix() throws Exception {
-
+/* 
         // parsing a CSV file into Scanner class constructor
+
+        System.out.println("\n\n");
+        Stream<String> linhas = PathToCSVFile.lines();
+
+        // linhas.forEach(l -> System.out.println(l));
+
+        int tamanho = linhas.length();
+        System.out.println("\n\n");
 
         Scanner sc = new Scanner(new File(PathToCSVFile));
         sc.useDelimiter(","); // sets the delimiter pattern
@@ -157,9 +177,54 @@ public class LabelPropagation {
         }
         sc.close(); // closes the scanner
 
-        double[][] dataMatrix = new double[0][0];
-
         return dataMatrix;
+ */    
+        System.out.println("\n\n INICIO");
+        BufferedReader reader = null;
+        String line = "";
+        String csvDelimiter = ",";
+        int rowCount = 0;
+        int columnCount = 3;
+
+        try {
+            reader = new BufferedReader(new FileReader(PathToCSVFile));
+
+            // Descartar a primeira linha (cabeçalho)
+            reader.readLine();
+
+            // Contar as linhas restantes e determinar o número de colunas
+            while ((line = reader.readLine()) != null) {
+                rowCount++;
+                // String[] values = line.split(csvDelimiter);
+                //columnCount = values.length;
+            }
+
+            // Criar a matriz com base no tamanho determinado
+            double[][] dataMatrix = new double[rowCount][columnCount];
+            reader.close();
+
+            // Reiniciar o leitor para ler novamente o arquivo CSV
+            reader = new BufferedReader(new FileReader(PathToCSVFile));
+
+            // Descartar a primeira linha (cabeçalho)
+            reader.readLine();
+
+            int row = 0;
+            while ((line = reader.readLine()) != null) {
+                String[] values = line.split(csvDelimiter);
+                for (int col = 0; col < columnCount; col++) {
+                    dataMatrix[row][col] = Double.parseDouble(values[col]);
+                }
+                row++;
+            }
+
+            return dataMatrix;
+        } finally {
+            if (reader != null) {
+                reader.close();
+            }
+            System.out.println("\n\n FIM");
+        }
     }
 
     public static void Exemplo2() {
