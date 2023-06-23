@@ -3,6 +3,8 @@ import java.util.Scanner;
 import java.util.stream.*;
 import java.io.*;
 
+// teste
+
 public class LabelPropagation {
 
     // Mude para o caminho do seu computador
