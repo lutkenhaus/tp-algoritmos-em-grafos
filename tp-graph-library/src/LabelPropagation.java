@@ -6,7 +6,7 @@ import java.io.*;
 public class LabelPropagation {
 
     // Mude para o caminho do seu computador
-    static String PathToCSVFile = "/home/gustavo/\u00C1rea de Trabalho/GRAFOS/TrabalhoPratico/tp-algoritmos-em-grafos/tp-graph-library/database/two_moons.csv";
+    static String PathToCSVFile = "C:/Users/gomes/OneDrive/Documentos/trabalho de grafos/tp-algoritmos-em-grafos/tp-graph-library/database/two_moons.csv";
     public static void main(String[] args) {
 
         // Dados de exemplo
@@ -24,7 +24,6 @@ public class LabelPropagation {
 
         try {
             data = convertDataFromCSVtoMatrix();
-
             printMatrix(data);
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,7 +53,6 @@ public class LabelPropagation {
     }
 
     public static double[][] labelPropagation(double[][] X, double[][] W, double alpha, int numIterations) {
-        
         int numPoints = X.length;
         int numClasses = Arrays.stream(X).mapToInt(x -> (int) x[2]).max().orElse(0) + 1;
 
@@ -71,15 +69,12 @@ public class LabelPropagation {
             double[][] newF = new double[numPoints][numClasses];
 
             for (int i = 0; i < numPoints; i++) {
-                for (int j = 0; j < numPoints; j++) {
-                    double[] row = W[j];
+                for (int k = 0; k < numClasses; k++) {
                     double sum = 0.0;
-                    for (int k = 0; k < numClasses; k++) {
-                        sum += row[k] * F[j][k];
+                    for (int j = 0; j < numPoints; j++) {
+                        sum += W[i][j] * F[j][k];
                     }
-                    for (int k = 0; k < numClasses; k++) {
-                        newF[i][k] += alpha * sum * F[i][k];
-                    }
+                    newF[i][k] = alpha * sum;
                 }
             }
 
@@ -88,6 +83,7 @@ public class LabelPropagation {
 
         return F;
     }
+
 
     public static double[][] computeAffinityMatrix(double[][] X) {
         
