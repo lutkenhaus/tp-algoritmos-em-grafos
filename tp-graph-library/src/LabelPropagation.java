@@ -212,24 +212,4 @@ public class LabelPropagation {
         }
     }
 
-    public static void Exemplo2() {
-
-        // Função pra transformar CSV em forma de Matriz
-        // A ser implementada
-        // Erro out of bounds for lenght 0
-        String line = "";  
-        String splitBy = ",";  
-        try {
-            // parsing a CSV file into BufferedReader class constructor
-            BufferedReader br = new BufferedReader(new FileReader(PathToCSVFile));
-            while ((line = br.readLine()) != null) { // returns a Boolean value
-                String[] data_properties = line.split(splitBy); // use comma as separator
-                System.out.println("X1=" + data_properties[0] + ", X2=" + data_properties[1] + ", Y=" + data_properties[2]);  
-            }
-            br.close();
-        }   
-        catch (IOException e) {  
-            e.printStackTrace();  
-        }  
-    }  
 }
