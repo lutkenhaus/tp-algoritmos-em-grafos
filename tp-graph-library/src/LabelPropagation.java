@@ -1,7 +1,6 @@
 import java.util.Arrays;
-import java.util.Scanner;
-import java.util.stream.*;
 import java.io.*;
+import java.text.DecimalFormat;
 
 // teste
 
@@ -20,22 +19,20 @@ public class LabelPropagation {
             {5.0, 6.0, 0},
             {6.0, 7.0, 1}
         };
-        
-        // Desconsiderar próxima linha, é apenas um teste
-        // double[][] data = new double[0][0];
 
         try {
             data = convertDataFromCSVtoMatrix();
+            System.out.println("Matriz Base:"); // terceira coluna extremos.
             printMatrix(data);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        System.out.println();
         // Calcular matriz de afinidade
         double[][] affinityMatrix = computeAffinityMatrix(data);
         System.out.println("Matriz de Afinidade: ");
-        System.out.println();
         printMatrix(affinityMatrix);
+        System.out.println();
 
         // Executar propagação de rótulos
         double[][] propagatedLabels = labelPropagation(data, affinityMatrix, 0.5, 100);
@@ -43,8 +40,8 @@ public class LabelPropagation {
 
         // Imprimir matriz de rótulos propagados
         System.out.println("Matriz de Rótulos Propagados:");
-        System.out.println();
         printMatrix(propagatedLabels);
+        System.out.println();
 
         // Prever rótulos
         int[] predictedLabels = predictLabels(propagatedLabels);
@@ -52,6 +49,7 @@ public class LabelPropagation {
         // Imprimir rótulos previstos
         System.out.println("Rótulos Previstos:");
         System.out.println(Arrays.toString(predictedLabels));
+        System.out.println();
     }
 
     public static double[][] labelPropagation(double[][] X, double[][] W, double alpha, int numIterations) {
@@ -74,9 +72,12 @@ public class LabelPropagation {
                 for (int k = 0; k < numClasses; k++) {
                     double sum = 0.0;
                     for (int j = 0; j < numPoints; j++) {
-                        sum += W[i][j] * F[j][k];
+                        sum += W[i][k] * F[j][k];
                     }
-                    newF[i][k] = alpha * sum;
+                    DecimalFormat df = new DecimalFormat("#0.00");
+
+                    String formattedValue = df.format(alpha * sum).replace(",", ".");
+                    newF[i][k] = Double.parseDouble(formattedValue);
                 }
             }
 
@@ -92,14 +93,17 @@ public class LabelPropagation {
         int numPoints = X.length;
         double sigma = 1.0; // Valor de sigma a ser ajustado
 
-        double[][] W = new double[numPoints][numPoints];
+        double[][] W = new double[numPoints][2];
+        DecimalFormat df = new DecimalFormat("#0.00");
 
         for (int i = 0; i < numPoints; i++) {
-            for (int j = 0; j < numPoints; j++) {
+            for (int j = 0; j < 2; j++) {
                 double[] xi = {X[i][0], X[i][1]};
                 double[] xj = {X[j][0], X[j][1]};
                 double distance = computeDistance(xi, xj);
-                W[i][j] = Math.exp(-distance / (2 * sigma * sigma));
+                double wValue = Math.exp(-distance / (2 * sigma * sigma));
+                String formattedValue = df.format(wValue).replace(",", ".");
+                W[i][j] = Double.parseDouble(formattedValue);
             }
         }
 
@@ -108,7 +112,6 @@ public class LabelPropagation {
 
     public static void printMatrix(double[][] matrix) {
 
-        System.out.println("matrix lenght()" + matrix.length);
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 System.out.print(matrix[i][j] + " ");
@@ -157,27 +160,6 @@ public class LabelPropagation {
     }
 
     public static double[][] convertDataFromCSVtoMatrix() throws Exception {
-/* 
-        // parsing a CSV file into Scanner class constructor
-
-        System.out.println("\n\n");
-        Stream<String> linhas = PathToCSVFile.lines();
-
-        // linhas.forEach(l -> System.out.println(l));
-
-        int tamanho = linhas.length();
-        System.out.println("\n\n");
-
-        Scanner sc = new Scanner(new File(PathToCSVFile));
-        sc.useDelimiter(","); // sets the delimiter pattern
-        while (sc.hasNext()) {
-            System.out.print(sc.next()); // find and returns the next complete token from this Scanner
-        }
-        sc.close(); // closes the scanner
-
-        return dataMatrix;
- */    
-        System.out.println("\n\n INICIO");
         BufferedReader reader = null;
         String line = "";
         String csvDelimiter = ",";
@@ -193,8 +175,6 @@ public class LabelPropagation {
             // Contar as linhas restantes e determinar o número de colunas
             while ((line = reader.readLine()) != null) {
                 rowCount++;
-                // String[] values = line.split(csvDelimiter);
-                //columnCount = values.length;
             }
 
             // Criar a matriz com base no tamanho determinado
@@ -210,10 +190,18 @@ public class LabelPropagation {
             int row = 0;
             while ((line = reader.readLine()) != null) {
                 String[] values = line.split(csvDelimiter);
+                
+                DecimalFormat df = new DecimalFormat("#0.00");
+
                 for (int col = 0; col < columnCount; col++) {
-                    dataMatrix[row][col] = Double.parseDouble(values[col]);
+                    String formattedValue = values[col].replace(",", ".");
+                    double parsedValue = Double.parseDouble(formattedValue);
+                    String formattedNumber = df.format(parsedValue).replace(",", ".");
+                    dataMatrix[row][col] = Double.parseDouble(formattedNumber);
                 }
+
                 row++;
+
             }
 
             return dataMatrix;
@@ -221,7 +209,6 @@ public class LabelPropagation {
             if (reader != null) {
                 reader.close();
             }
-            System.out.println("\n\n FIM");
         }
     }
 
